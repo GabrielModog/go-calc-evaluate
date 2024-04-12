@@ -1,9 +1,12 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"math"
 	"regexp"
-	// "strings"
+	"strconv"
+	"strings"
 )
 
 type Stack struct {
@@ -114,8 +117,55 @@ func InfixToPostfix(expression string) string {
 	// return strings.Join(output.data, " ")
 }
 
+func EvaluatePostfix(expression string) (float64, error) {
+	stack := &Stack{}
+	tokens := strings.Split(expression, " ")
+
+	for _, token := range(tokens) {
+		if IsNumber(token) {
+			fmt.Println("In Stack:", token)
+			n, err := strconv.ParseFloat(token, 64)
+			if err != nil {
+				return 0, errors.New("expression doesn't has valid numeric character")
+			}
+			stack.Push(n)
+		} else {
+			b,_ := stack.Pop()
+			a,_ := stack.Pop()
+
+			fmt.Println(stack.data)
+			fmt.Println(b, a)
+
+			switch token {
+			case "+":
+				b := b.(float64)
+				a := a.(float64)
+				stack.Push(a + b)
+			case "-":
+				b := b.(float64)
+				a := a.(float64)
+				stack.Push(a - b)
+			case "*":
+				b := b.(float64)
+				a := a.(float64)
+				stack.Push(a * b)
+			case "/":
+				b := b.(float64)
+				a := a.(float64)
+				stack.Push(a / b)
+			case "^":
+				b := b.(float64)
+				a := a.(float64)
+				stack.Push(math.Pow(a, b))
+			}
+		}
+	}
+	result, _ := stack.Pop()
+	return result.(float64), nil
+}
+
 func main() {
-	tokens := InfixToPostfix("2 + 3")
+	tokens, _ := EvaluatePostfix("3 4 2 ^ +")
 
 	// output := &Stack{}
 	// operators := &Stack{}
@@ -127,7 +177,5 @@ func main() {
 	// fmt.Println(output.data)
 	// fmt.Println(operators.data)
 
-
 	fmt.Println(tokens)
-
 }
