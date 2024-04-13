@@ -39,6 +39,10 @@ func (s *Stack) Peek() (interface{}, bool) {
 	return s.data[len(s.data)-1], true
 }
 
+func (s *Stack) isEmpty() bool {
+	return len(s.data) == 0
+}
+
 func GetPrecedence(operator string) int {
 	precedences := map[string]int{
 		"+": 1,
@@ -69,7 +73,7 @@ func IsNumber(str string) bool {
   return match
 }
 
-func InfixToPostfix(expression string) string {
+func InfixToPostfix(expression string) (string, error) {
 	output := &Stack{}
 	operators := &Stack{}
 	tokens := Tokenize(expression)
@@ -86,35 +90,60 @@ func InfixToPostfix(expression string) string {
 			operators.Push(token)
 		} else if token == ")" {
 			fmt.Println("[operator]:", token)
-			for operators.data[len(operators.data)] != "(" {
-				lastVal, _ := operators.Pop()
-				output.Push(lastVal)
+			// for operators.data[len(operators.data)] != "(" {
+			// 	lastVal, _ := operators.Pop()
+			// 	output.Push(lastVal)
+			// }
+
+			for {
+				val, ok := operators.Pop()
+
+				if !ok {
+					return "", errors.New("unmatched parenthesis")
+				}
+
+				if val.(string) == "(" {
+					break
+				}
+
+				output.Push(val)
 			}
 		} else {
 			fmt.Println("[token]:", token)
 			fmt.Println("[stack->length]:", len(operators.data))
 
-			// valid operator order precedence
-			if len(operators.data) != 0 {
-				for GetPrecedence(operators.data[len(operators.data)-1].(string)) >= GetPrecedence(token) {
-					lastVal, _ := operators.Pop()
-					output.Push(lastVal)
-				}	
+			if len(operators.data) > 0 {
+				for {
+					topValue, ok := operators.Peek()
+
+					if !ok {
+						break
+					}
+
+					if GetPrecedence(topValue.(string)) >= GetPrecedence(token) && topValue.(string) != "(" {
+						value, _ := operators.Pop()
+						output.Push(value)
+					}	else {
+						break
+					}
+				}
 			}
-			
+				
 			operators.Push(token)
 		}
 	}
 
-	for len(operators.data) >= 0 {
+	for len(operators.data) > 0 {
 		lastVal, _ := operators.Pop()
 		output.Push(lastVal)
 	}
 
 	fmt.Println(output.data)
 
-	return ""
-	// return strings.Join(output.data, " ")
+	// missmatching type interfaces
+	postfixExpression := strings.Join(output.data.([]string), " ")
+
+	return postfixExpression, nil
 }
 
 func EvaluatePostfix(expression string) (float64, error) {
@@ -165,7 +194,7 @@ func EvaluatePostfix(expression string) (float64, error) {
 }
 
 func main() {
-	tokens, _ := EvaluatePostfix("3 4 2 ^ +")
+	tokens, _ := InfixToPostfix("3 + 4 ^ 2")
 
 	// output := &Stack{}
 	// operators := &Stack{}
