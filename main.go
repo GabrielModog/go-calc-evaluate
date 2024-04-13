@@ -39,10 +39,6 @@ func (s *Stack) Peek() (interface{}, bool) {
 	return s.data[len(s.data)-1], true
 }
 
-func (s *Stack) isEmpty() bool {
-	return len(s.data) == 0
-}
-
 func GetPrecedence(operator string) int {
 	precedences := map[string]int{
 		"+": 1,
@@ -114,7 +110,7 @@ func InfixToPostfix(expression string) (string, error) {
 					}
 				}
 			}
-			
+
 			operators.Push(token)
 		}
 	}
@@ -143,7 +139,6 @@ func EvaluatePostfix(expression string) (float64, error) {
 
 	for _, token := range tokens {
 		if IsNumber(token) {
-			fmt.Println("In Stack:", token)
 			n, err := strconv.ParseFloat(token, 64)
 			if err != nil {
 				return 0, errors.New("expression doesn't has valid numeric character")
@@ -152,9 +147,6 @@ func EvaluatePostfix(expression string) (float64, error) {
 		} else {
 			b,_ := stack.Pop()
 			a,_ := stack.Pop()
-
-			fmt.Println(stack.data)
-			fmt.Println(b, a)
 
 			switch token {
 			case "+":
@@ -180,12 +172,23 @@ func EvaluatePostfix(expression string) (float64, error) {
 			}
 		}
 	}
+
 	result, _ := stack.Pop()
+	
 	return result.(float64), nil
 }
 
 func main() {
-	tokens, _ := InfixToPostfix("3 + 4 ^ 2")
+	expression := ""
+
+	fmt.Print("= ")
+	fmt.Scanln(&expression)
+
+	if strings.TrimSpace(expression) == "" {
+		panic("insufficient expressions")
+	}
+
+	tokens, _ := InfixToPostfix(expression)
 	result, _ := EvaluatePostfix(tokens)
 
 	fmt.Println(result)
