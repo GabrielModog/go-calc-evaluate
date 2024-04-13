@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	internal "github.com/GabrielModog/go-calc-evaluate/internal/stack"
 )
 
 func GetPrecedence(operator string) int {
@@ -40,8 +42,9 @@ func IsNumber(str string) bool {
 }
 
 func InfixToPostfix(expression string) (string, error) {
-	output := &Stack{}
-	operators := &Stack{}
+	output := &internal.Stack{}
+	operators := &internal.Stack{}
+
 	tokens := Tokenize(expression)
 
 	for _, token := range tokens {
@@ -64,7 +67,7 @@ func InfixToPostfix(expression string) (string, error) {
 				output.Push(val)
 			}
 		} else {
-			if len(operators.data) > 0 {
+			if len(operators.Data) > 0 {
 				for {
 					topValue, ok := operators.Peek()
 
@@ -85,16 +88,16 @@ func InfixToPostfix(expression string) (string, error) {
 		}
 	}
 
-	for len(operators.data) > 0 {
+	for len(operators.Data) > 0 {
 		lastVal, _ := operators.Pop()
 		output.Push(lastVal)
 	}
 
-	fmt.Println(output.data)
+	fmt.Println(output.Data)
 
 	var postfixExpression string
 
-	for _, val := range output.data {
+	for _, val := range output.Data {
 		postfixExpression += val.(string) + " "
 	}
 
@@ -104,7 +107,7 @@ func InfixToPostfix(expression string) (string, error) {
 }
 
 func EvaluatePostfix(expression string) (float64, error) {
-	stack := &Stack{}
+	stack := &internal.Stack{}
 	tokens := strings.Split(expression, " ")
 
 	for _, token := range tokens {

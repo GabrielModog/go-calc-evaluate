@@ -4,12 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/GabrielModog/go-calc-evaluate/internal"
+	internal "github.com/GabrielModog/go-calc-evaluate/internal/shunting_yard"
 )
-
-type Num interface {
-	int | int8 | int16 | int32 | int64 | float32 | float64
-}
 
 func main() {
 	expression := ""
