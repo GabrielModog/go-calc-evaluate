@@ -78,23 +78,12 @@ func InfixToPostfix(expression string) (string, error) {
 	operators := &Stack{}
 	tokens := Tokenize(expression)
 
-	for _, token := range(tokens) {
-		fmt.Println("Token:", token)
-
-		// check if token is a valid number and add to stack
+	for _, token := range tokens {
 		if IsNumber(token) {
-			fmt.Println("[number]:", token)
 			output.Push(token)
 		} else if token == "(" {
-			fmt.Println("[operator]:", token)
 			operators.Push(token)
 		} else if token == ")" {
-			fmt.Println("[operator]:", token)
-			// for operators.data[len(operators.data)] != "(" {
-			// 	lastVal, _ := operators.Pop()
-			// 	output.Push(lastVal)
-			// }
-
 			for {
 				val, ok := operators.Pop()
 
@@ -109,9 +98,6 @@ func InfixToPostfix(expression string) (string, error) {
 				output.Push(val)
 			}
 		} else {
-			fmt.Println("[token]:", token)
-			fmt.Println("[stack->length]:", len(operators.data))
-
 			if len(operators.data) > 0 {
 				for {
 					topValue, ok := operators.Peek()
@@ -128,7 +114,7 @@ func InfixToPostfix(expression string) (string, error) {
 					}
 				}
 			}
-				
+			
 			operators.Push(token)
 		}
 	}
@@ -140,8 +126,13 @@ func InfixToPostfix(expression string) (string, error) {
 
 	fmt.Println(output.data)
 
-	// missmatching type interfaces
-	postfixExpression := strings.Join(output.data.([]string), " ")
+	var postfixExpression string
+
+	for _, val := range output.data {
+		postfixExpression += val.(string) + " "
+	}
+
+	postfixExpression = strings.TrimSpace(postfixExpression)
 
 	return postfixExpression, nil
 }
@@ -150,7 +141,7 @@ func EvaluatePostfix(expression string) (float64, error) {
 	stack := &Stack{}
 	tokens := strings.Split(expression, " ")
 
-	for _, token := range(tokens) {
+	for _, token := range tokens {
 		if IsNumber(token) {
 			fmt.Println("In Stack:", token)
 			n, err := strconv.ParseFloat(token, 64)
@@ -195,16 +186,7 @@ func EvaluatePostfix(expression string) (float64, error) {
 
 func main() {
 	tokens, _ := InfixToPostfix("3 + 4 ^ 2")
+	result, _ := EvaluatePostfix(tokens)
 
-	// output := &Stack{}
-	// operators := &Stack{}
-
-	// output.Push(2)
-	// operators.Push("+")
-	// output.Push(3)
-
-	// fmt.Println(output.data)
-	// fmt.Println(operators.data)
-
-	fmt.Println(tokens)
+	fmt.Println(result)
 }
