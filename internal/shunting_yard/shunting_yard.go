@@ -42,8 +42,8 @@ func IsNumber(str string) bool {
 }
 
 func InfixToPostfix(expression string) (string, error) {
-	output := &internal.Stack{}
-	operators := &internal.Stack{}
+	output := &internal.Stack[string]{}
+	operators := &internal.Stack[string]{}
 
 	tokens := Tokenize(expression)
 
@@ -60,7 +60,7 @@ func InfixToPostfix(expression string) (string, error) {
 					return "", errors.New("unmatched parenthesis")
 				}
 
-				if val.(string) == "(" {
+				if val == "(" {
 					break
 				}
 
@@ -75,7 +75,7 @@ func InfixToPostfix(expression string) (string, error) {
 						break
 					}
 
-					if GetPrecedence(topValue.(string)) >= GetPrecedence(token) && topValue.(string) != "(" {
+					if GetPrecedence(topValue) >= GetPrecedence(token) && topValue != "(" {
 						value, _ := operators.Pop()
 						output.Push(value)
 					}	else {
@@ -98,7 +98,7 @@ func InfixToPostfix(expression string) (string, error) {
 	var postfixExpression string
 
 	for _, val := range output.Data {
-		postfixExpression += val.(string) + " "
+		postfixExpression += val + " "
 	}
 
 	postfixExpression = strings.TrimSpace(postfixExpression)
@@ -107,7 +107,7 @@ func InfixToPostfix(expression string) (string, error) {
 }
 
 func EvaluatePostfix(expression string) (float64, error) {
-	stack := &internal.Stack{}
+	stack := &internal.Stack[float64]{}
 	tokens := strings.Split(expression, " ")
 
 	for _, token := range tokens {
@@ -123,24 +123,14 @@ func EvaluatePostfix(expression string) (float64, error) {
 
 			switch token {
 			case "+":
-				b := b.(float64)
-				a := a.(float64)
 				stack.Push(a + b)
 			case "-":
-				b := b.(float64)
-				a := a.(float64)
 				stack.Push(a - b)
 			case "*":
-				b := b.(float64)
-				a := a.(float64)
 				stack.Push(a * b)
 			case "/":
-				b := b.(float64)
-				a := a.(float64)
 				stack.Push(a / b)
 			case "^":
-				b := b.(float64)
-				a := a.(float64)
 				stack.Push(math.Pow(a, b))
 			}
 		}
@@ -148,5 +138,5 @@ func EvaluatePostfix(expression string) (float64, error) {
 
 	result, _ := stack.Pop()
 	
-	return result.(float64), nil
+	return result, nil
 }
