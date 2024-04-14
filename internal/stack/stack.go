@@ -1,16 +1,21 @@
 package internal
 
-type Stack struct {
-	Data []interface{}
+type StackValue interface {
+	int | int64 | float32 | float64 | string
 }
 
-func (s *Stack) Push(val interface{}) {
+type Stack[T StackValue] struct {
+	Data []T
+}
+
+func (s *Stack[T]) Push(val T) {
 	s.Data = append(s.Data, val)
 }
 
-func (s *Stack) Pop() (interface{}, bool) {
+func (s *Stack[T]) Pop() (T, bool) {
 	if len(s.Data) == 0 {
-		return nil, false
+		var emptyValue T
+		return emptyValue, false
 	}
 
 	lastIndex := len(s.Data) - 1
@@ -20,9 +25,10 @@ func (s *Stack) Pop() (interface{}, bool) {
 	return lastVal, true
 }
 
-func (s *Stack) Peek() (interface{}, bool) {
+func (s *Stack[T]) Peek() (T, bool) {
 	if len(s.Data) == 0 {
-		return nil, false
+		var emptyValue T
+		return emptyValue, false
 	}
 
 	return s.Data[len(s.Data)-1], true
