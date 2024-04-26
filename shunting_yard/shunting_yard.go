@@ -1,4 +1,4 @@
-package internal
+package shunting_yard
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	internal "github.com/GabrielModog/go-calc-evaluate/internal/stack"
+	stack "github.com/GabrielModog/go-calc-evaluate/internal/stack"
 )
 
 func GetPrecedence(operator string) int {
@@ -42,8 +42,8 @@ func IsNumber(str string) bool {
 }
 
 func InfixToPostfix(expression string) (string, error) {
-	output := &internal.Stack[string]{}
-	operators := &internal.Stack[string]{}
+	output := &stack.Stack[string]{}
+	operators := &stack.Stack[string]{}
 
 	tokens := Tokenize(expression)
 
@@ -107,7 +107,7 @@ func InfixToPostfix(expression string) (string, error) {
 }
 
 func EvaluatePostfix(expression string) (float64, error) {
-	stack := &internal.Stack[float64]{}
+	opStack := &stack.Stack[float64]{}
 	tokens := strings.Split(expression, " ")
 
 	for _, token := range tokens {
@@ -116,27 +116,27 @@ func EvaluatePostfix(expression string) (float64, error) {
 			if err != nil {
 				return 0, errors.New("expression doesn't has valid numeric character")
 			}
-			stack.Push(n)
+			opStack.Push(n)
 		} else {
-			b,_ := stack.Pop()
-			a,_ := stack.Pop()
+			b,_ := opStack.Pop()
+			a,_ := opStack.Pop()
 
 			switch token {
 			case "+":
-				stack.Push(a + b)
+				opStack.Push(a + b)
 			case "-":
-				stack.Push(a - b)
+				opStack.Push(a - b)
 			case "*":
-				stack.Push(a * b)
+				opStack.Push(a * b)
 			case "/":
-				stack.Push(a / b)
+				opStack.Push(a / b)
 			case "^":
-				stack.Push(math.Pow(a, b))
+				opStack.Push(math.Pow(a, b))
 			}
 		}
 	}
 
-	result, _ := stack.Pop()
+	result, _ := opStack.Pop()
 	
 	return result, nil
 }

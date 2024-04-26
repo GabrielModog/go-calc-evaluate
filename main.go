@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	internal "github.com/GabrielModog/go-calc-evaluate/internal/shunting_yard"
+	parser "github.com/GabrielModog/go-calc-evaluate/shunting_yard"
 )
 
 func main() {
@@ -17,8 +17,8 @@ func main() {
 		panic("insufficient expressions")
 	}
 
-	tokens, _ := internal.InfixToPostfix(expression)
-	result, _ := internal.EvaluatePostfix(tokens)
+	tokens, _ := parser.InfixToPostfix(expression)
+	result, _ := parser.EvaluatePostfix(tokens)
 
 	fmt.Println(result)
 }

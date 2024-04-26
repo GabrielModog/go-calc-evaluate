@@ -1,4 +1,4 @@
-package internal
+package shunting_yard
 
 import (
 	"testing"
