@@ -19,10 +19,6 @@ func main() {
 
 	expression := strings.TrimSpace(expressionInput)
 
-	fmt.Println("expression:",expression)
-
-	fmt.Println("input:", expressionInput)
-
 	tokens, _ := parser.InfixToPostfix(expression)
 	result, _ := parser.EvaluatePostfix(tokens)
 
