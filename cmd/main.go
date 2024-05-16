@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	parser "github.com/GabrielModog/go-calc-evaluate/shunting_yard"
+	parser "github.com/GabrielModog/go-evaluate-expressions/shunting_yard"
 )
 
 func main() {

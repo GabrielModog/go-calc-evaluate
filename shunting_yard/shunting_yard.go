@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	stack "github.com/GabrielModog/go-calc-evaluate/internal/stack"
+	stack "github.com/GabrielModog/go-evaluate-expressions/internal/stack"
 )
 
 func GetPrecedence(operator string) int {

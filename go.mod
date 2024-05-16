@@ -1,3 +1,3 @@
-module github.com/GabrielModog/go-calc-evaluate
+module github.com/GabrielModog/go-evaluate-expressions
 
 go 1.22.0
