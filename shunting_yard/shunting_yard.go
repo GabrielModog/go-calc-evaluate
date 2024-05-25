@@ -11,7 +11,7 @@ import (
 	stack "github.com/GabrielModog/go-evaluate-expressions/internal/stack"
 )
 
-func GetPrecedence(operator string) int {
+func getPrecedence(operator string) int {
 	precedences := map[string]int{
 		"+": 1,
 		"-": 1,
@@ -22,18 +22,18 @@ func GetPrecedence(operator string) int {
 	return precedences[operator]
 }
 
-func Tokenize(expression string) []string {
+func tokenize(expression string) ([]string, error) {
 	pattern := `\d+|\+|-|\*|/|\(|\)|\^`
 	token_regex, err := regexp.Compile(pattern)
 
 	if err != nil {
-		return []string{"ERROR"}
+		return nil, fmt.Errorf("[error]: %w", err)
 	}
 
-	return token_regex.FindAllString(expression, -1)
+	return token_regex.FindAllString(expression, -1), nil
 }
 
-func IsNumber(str string) bool {
+func isNumber(str string) bool {
 	match, err := regexp.MatchString("^-?[0-9]+(?:\\.[0-9]*)?$", str)
 	if err != nil {
 		return false
@@ -45,10 +45,14 @@ func InfixToPostfix(expression string) (string, error) {
 	output := &stack.Stack[string]{}
 	operators := &stack.Stack[string]{}
 
-	tokens := Tokenize(expression)
+	tokens, err := tokenize(expression)
+
+	if err != nil {
+		return "", err
+	}
 
 	for _, token := range tokens {
-		if IsNumber(token) {
+		if isNumber(token) {
 			output.Push(token)
 		} else if token == "(" {
 			operators.Push(token)
@@ -75,7 +79,7 @@ func InfixToPostfix(expression string) (string, error) {
 						break
 					}
 
-					if GetPrecedence(topValue) >= GetPrecedence(token) && topValue != "(" {
+					if getPrecedence(topValue) >= getPrecedence(token) && topValue != "(" {
 						value, _ := operators.Pop()
 						output.Push(value)
 					}	else {
@@ -93,8 +97,6 @@ func InfixToPostfix(expression string) (string, error) {
 		output.Push(lastVal)
 	}
 
-	fmt.Println(output.Data)
-
 	var postfixExpression string
 
 	for _, val := range output.Data {
@@ -111,7 +113,7 @@ func EvaluatePostfix(expression string) (float64, error) {
 	tokens := strings.Split(expression, " ")
 
 	for _, token := range tokens {
-		if IsNumber(token) {
+		if isNumber(token) {
 			n, err := strconv.ParseFloat(token, 64)
 			if err != nil {
 				return 0, errors.New("expression doesn't has valid numeric character")
