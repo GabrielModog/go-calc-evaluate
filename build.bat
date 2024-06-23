@@ -1,0 +1,1 @@
+go build -o build/calcexpr.exe cmd/main.go
